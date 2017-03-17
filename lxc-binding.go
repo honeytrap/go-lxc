@@ -116,12 +116,12 @@ func ContainerNames(lxcpath ...string) []string {
 
 // Containers returns the defined and active containers on the system. Only
 // containers that could retrieved successfully are returned.
-func Containers(lxcpath ...string) []Container {
-	var containers []Container
+func Containers(lxcpath ...string) []*Container {
+	var containers []*Container
 
 	for _, v := range ContainerNames(lxcpath...) {
 		if container, err := NewContainer(v, lxcpath...); err == nil {
-			containers = append(containers, *container)
+			containers = append(containers, container)
 		}
 	}
 
@@ -198,6 +198,7 @@ func ActiveContainers(lxcpath ...string) []Container {
 	return containers
 }
 
+// VersionNumber returns the installed lxc major and minor version details.
 func VersionNumber() (major int, minor int) {
 	major = C.LXC_VERSION_MAJOR
 	minor = C.LXC_VERSION_MINOR
@@ -205,6 +206,8 @@ func VersionNumber() (major int, minor int) {
 	return
 }
 
+// VersionAtLeast validates that the installed version of lxc in the host system
+// matches the giving major:minor:macro numbers.
 func VersionAtLeast(major int, minor int, micro int) bool {
 	if C.LXC_DEVEL == 1 {
 		return true
